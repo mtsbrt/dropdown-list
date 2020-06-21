@@ -32,8 +32,11 @@ export class TreeComponent implements OnInit {
     }
 
     public ngOnInit() {
-        console.log(this.treeData);
         this.dataSource.data = this.treeData;
+        let hasStoredSelection = this.rememberSelection();
+        if (hasStoredSelection) {
+            this.restoreSelection(hasStoredSelection);
+        }
     }
 
     public transformer(node: ItemNode, level: number) {
@@ -41,6 +44,7 @@ export class TreeComponent implements OnInit {
         const flatNode = existingNode && existingNode.name === node.name
             ? existingNode
             : new ItemFlatNode();
+        flatNode.id = node.id;
         flatNode.name = node.name;
         flatNode.level = level;
         flatNode.expandable = !!node.children.length;
@@ -67,7 +71,7 @@ export class TreeComponent implements OnInit {
 
     public todoItemSelectionToggle(node: ItemFlatNode, event: MatCheckboxChange): void {
         this.checklistSelection.toggle(node);
-        console.log(this.dataSource._flattenedData);
+        console.log(this.checklistSelection);
 
         const descendants = this.treeControl.getDescendants(node);
         if (this.checklistSelection.isSelected(node)) {
@@ -81,7 +85,7 @@ export class TreeComponent implements OnInit {
             this.checklistSelection.isSelected(child)
         );
         this.checkAllParentsSelection(node);
-        this.storeSelection();
+        this.storeSelection(this.checklistSelection.selected);
     }
 
     public descendantsAllSelected(node: ItemFlatNode): boolean {
@@ -101,6 +105,8 @@ export class TreeComponent implements OnInit {
     public todoLeafItemSelectionToggle(node: ItemFlatNode): void {
         this.checklistSelection.toggle(node);
         this.checkAllParentsSelection(node);
+
+        this.storeSelection(this.checklistSelection.selected);
     }
 
     public checkAllParentsSelection(node: ItemFlatNode): void {
@@ -148,12 +154,21 @@ export class TreeComponent implements OnInit {
         }
     }
 
-    public storeSelection() {
-        localStorage.setItem('selectedNodes', JSON.stringify(this.checklistSelection));
+    public storeSelection(selection) {
+        localStorage.setItem('selectedNodes', JSON.stringify(selection));
     }
 
-    public rememberSelection(): SelectionModel<ItemFlatNode> {
+    public rememberSelection(): ItemFlatNode[] {
         return JSON.parse(localStorage.getItem('selectedNodes'));
+    }
+
+    public restoreSelection(oldSelection: ItemFlatNode[]) {
+        oldSelection.map(oldNode => {
+            const node = this.treeControl.dataNodes.find(item => item.id === oldNode.id);
+            if (node) {
+                this.checklistSelection.select(node);
+            }
+        })
     }
 
     public removeStorage() {
