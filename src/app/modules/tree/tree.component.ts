@@ -7,14 +7,16 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
+import json from '../../../../database/data.json';
+
 @Component({
     selector: 'app-tree',
     templateUrl: './tree.component.html',
     styleUrls: ['./tree.component.scss']
 })
 export class TreeComponent implements OnInit {
-    
-    public treeData = this._treeDataService.formatData();
+
+    public treeData = this._treeDataService.formatData(json);
     public dataSource: MatTreeFlatDataSource<ItemNode, ItemFlatNode>;
     public treeFlattener: MatTreeFlattener<ItemNode, ItemFlatNode>;
     public treeControl: FlatTreeControl<ItemFlatNode>;
@@ -39,7 +41,7 @@ export class TreeComponent implements OnInit {
         }
     }
 
-    public transformer(node: ItemNode, level: number) {
+    public transformer(node: ItemNode, level: number): ItemFlatNode {
         const existingNode = this.nestedNodeMap ? this.nestedNodeMap.get(node) : null;
         const flatNode = existingNode && existingNode.name === node.name
             ? existingNode
@@ -65,13 +67,12 @@ export class TreeComponent implements OnInit {
         return node.children;
     }
 
-    public hasChild(_:number, _nodeData: ItemFlatNode) {
+    public hasChild(_: number, _nodeData: ItemFlatNode) {
         return _nodeData.expandable;
     }
 
     public todoItemSelectionToggle(node: ItemFlatNode, event: MatCheckboxChange): void {
         this.checklistSelection.toggle(node);
-        console.log(this.checklistSelection);
 
         const descendants = this.treeControl.getDescendants(node);
         if (this.checklistSelection.isSelected(node)) {
@@ -80,9 +81,8 @@ export class TreeComponent implements OnInit {
             event.source.checked = false;
             this.checklistSelection.deselect(...descendants);
         }
-        // Force update for the parent
         descendants.every(child =>
-            this.checklistSelection.isSelected(child)
+            this.checklistSelection.isSelected(child)   
         );
         this.checkAllParentsSelection(node);
         this.storeSelection(this.checklistSelection.selected);
@@ -91,7 +91,7 @@ export class TreeComponent implements OnInit {
     public descendantsAllSelected(node: ItemFlatNode): boolean {
         const descendants = this.treeControl.getDescendants(node);
         const descAllSelected = descendants.every(child =>
-          this.checklistSelection.isSelected(child)
+            this.checklistSelection.isSelected(child)
         );
         return descAllSelected;
     }
@@ -119,7 +119,6 @@ export class TreeComponent implements OnInit {
 
     public getParentNode(node: ItemFlatNode): ItemFlatNode | null {
 
-
         const currentLevel = this.getLevel(node);
 
         if (currentLevel < 1) {
@@ -135,6 +134,7 @@ export class TreeComponent implements OnInit {
                 return currentNode;
             }
         }
+        
         return null;
     }
 
@@ -163,6 +163,8 @@ export class TreeComponent implements OnInit {
     }
 
     public restoreSelection(oldSelection: ItemFlatNode[]) {
+        oldSelection = oldSelection || []
+
         oldSelection.map(oldNode => {
             const node = this.treeControl.dataNodes.find(item => item.id === oldNode.id);
             if (node) {
