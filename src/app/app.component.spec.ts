@@ -1,5 +1,8 @@
 import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatCardModule } from '@angular/material/card';
+import { TreeModule } from './modules/tree/tree.module';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
@@ -7,25 +10,18 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
+      imports: [
+        BrowserAnimationsModule,
+        MatCardModule,
+        TreeModule
+      ]
     }).compileComponents();
   }));
 
-  it('should create the app', () => {
+  it('should render the app successfully', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
+    
     expect(app).toBeTruthy();
-  });
-
-  it(`should have as title 'dropdown-list'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('dropdown-list');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('dropdown-list app is running!');
   });
 });
