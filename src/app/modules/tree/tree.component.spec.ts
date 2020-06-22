@@ -8,7 +8,7 @@ import { TreeComponent } from './tree.component'
 import { ItemFlatNode } from 'src/app/models/item-flat-node'
 import { of } from 'rxjs'
 
-fdescribe('TreeComponent', () => {
+describe('TreeComponent', () => {
   let component: TreeComponent;
   let fixture: ComponentFixture<TreeComponent>;
   let joc = jasmine.objectContaining;
@@ -78,13 +78,15 @@ fdescribe('TreeComponent', () => {
   })
 
   it('should store an object correctly into "selectedNodes"', () => {
-    spyOn(window.localStorage, 'setItem');
     const selection = [itemNode];
+    const expectedStoredValue = JSON.stringify(selection);
+    spyOn(window.localStorage, 'setItem');
+    spyOn(window.localStorage, 'getItem').and.returnValue(expectedStoredValue);
 
     component.storeSelection(selection);
 
-    expect(window.localStorage.setItem).toHaveBeenCalledWith('selectedNodes', JSON.stringify(selection))
-    expect(window.localStorage.getItem('selectedNodes')).toEqual(JSON.stringify(selection));
+    expect(window.localStorage.setItem).toHaveBeenCalledWith('selectedNodes', expectedStoredValue)
+    expect(window.localStorage.getItem('selectedNodes')).toEqual(expectedStoredValue);
   })
 
   it("should remember the selected nodes correctly", () =>  {
@@ -98,5 +100,18 @@ fdescribe('TreeComponent', () => {
     expect(window.localStorage.setItem).toHaveBeenCalledWith('selectedNodes', JSON.stringify(selection));
     expect(window.localStorage.getItem).toHaveBeenCalledWith('selectedNodes');
     expect(returnedSelection).toEqual(joc(selection));
+  });
+
+  it("should reset the tree to the default state", () => {
+    const selection = [itemNode];
+    spyOn(window.localStorage, 'removeItem');
+    spyOn(window.localStorage, 'getItem');
+
+    component.storeSelection(selection);
+    component.checklistSelection.select(flatNode);
+    component.resetTree();
+
+    expect(window.localStorage.removeItem).toHaveBeenCalledWith('selectedNodes');
+    expect(component.checklistSelection.selected).toEqual([]);
   });
 })

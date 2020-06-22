@@ -154,6 +154,11 @@ export class TreeComponent implements OnInit {
         }
     }
 
+    public resetTree() {
+        this.checklistSelection.deselect(...this.checklistSelection.selected);
+        this.removeStorage();
+    }
+
     public storeSelection(selection) {
         localStorage.setItem('selectedNodes', JSON.stringify(selection));
     }

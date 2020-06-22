@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 
 import { AppComponent } from './app.component';
 import { TreeModule } from './modules/tree/tree.module';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { TreeModule } from './modules/tree/tree.module';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    MatButtonModule,
     MatCardModule,
     TreeModule
   ],

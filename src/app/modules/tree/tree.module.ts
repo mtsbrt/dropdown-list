@@ -4,6 +4,7 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { TreeComponent } from './tree.component';
 import { CommonModule } from '@angular/common';
@@ -17,7 +18,8 @@ import { CommonModule } from '@angular/common';
         MatTreeModule,
         MatCheckboxModule,
         MatIconModule,
-        MatButtonModule
+        MatButtonModule,
+        MatTooltipModule
     ],
     exports: [
         TreeComponent
